@@ -3,10 +3,11 @@ CC = gcc
 CFLAGS = -Wall -Werror
 BIN_PATH = ./bin
 SOURCE_PATH = ./src
-TARGET=geoHash.exe
+TARGET=simHash.exe
+
 
 BINARY = $(BIN_PATH)/$(TARGET)
-DEPENDENCIES = $(SOURCE_PATH)/geoHash.c
+DEPENDENCIES = $(SOURCE_PATH)/simHash.c
 
 
 default : $(DEPENDENCIES)
@@ -17,3 +18,6 @@ test : default
 
 clean: 
 	$(RM) $(BIN_PATH)/* 
+
+memory: default
+	valgrind $(BINARY) " " "this is a axample of ..qssd.d 2qsd qdhkj sdklj sslqj-*/qsdqkhqskj data"
