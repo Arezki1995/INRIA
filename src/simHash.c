@@ -1,26 +1,31 @@
-//Tokenization
-
 #include <stdio.h>
 #include <stdlib.h> 
 #include <string.h>
 
-#define MAX 64  //maximum characters in the word
+//For MD5 hashing
+#include <openssl/md5.h>
 
-
+#define MAX 64                      //maximum characters in the word
+#define DIGEST_LENGTH 8             //number of bytes for the digest
+ 
 struct node{
    char data[MAX];
    struct node* next;
+   unsigned char hash[DIGEST_LENGTH];
 };
 
 typedef struct node Node;
 typedef struct node* NodePointer;
 
+////////////////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////////////////
 void freeLinkedList(NodePointer listHead){
     if(listHead != NULL)    freeLinkedList(listHead->next);    
-    
     free(listHead);       
 }
 
+////////////////////////////////////////////////////////////////////////////
 void insertIntoLinkedList(char * token, NodePointer* listHead){
 
    NodePointer newNode = NULL;
@@ -32,14 +37,18 @@ void insertIntoLinkedList(char * token, NodePointer* listHead){
    if(NULL != newNode){
 
       strcpy(newNode->data, token);
-
+      
+      //calculating 16bits MD5 hash of token  
+      const unsigned char* mot = (const unsigned char*) token;
+      MD5(mot, sizeof(newNode->data), newNode->hash);
+      
       //insert at beginning of linked list
          newNode->next = current;
          *listHead = newNode; 
    }
 }
 
-
+////////////////////////////////////////////////////////////////////////////
 void displayLinkedList(NodePointer current){
    if(NULL == current){
       printf("LIST EMPTY!\n\n");
@@ -49,15 +58,20 @@ void displayLinkedList(NodePointer current){
 
    //loop through list
    while(NULL != current){
-      printf("%s, ", current->data);
+      printf("%s \t:\t", current->data);
+      for(size_t i = 0; i < DIGEST_LENGTH; i++)
+      {
+          printf("%d", current->hash[i]);
+      }
+      printf("\n");
+      
       current = current->next;
    }
    printf("\n\n");
 }
 
 
-
-
+////////////////////////////////////////////////////////////////////////////
 int main(int argc, char* argv[]){
     
     const char* delim =argv[1];

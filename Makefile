@@ -11,13 +11,13 @@ DEPENDENCIES = $(SOURCE_PATH)/simHash.c
 
 
 default : $(DEPENDENCIES)
-	$(CC) -o $(BINARY) $(DEPENDENCIES) $(CFLAGS)
+	$(CC) -o $(BINARY) $(DEPENDENCIES) $(CFLAGS) -lcrypto
 
 test : default
-	./$(BINARY)
+	./$(BINARY)  " " "lkrgkklkj65d6  df2s454s14 opg132dfg 8ee5rg4ev  6r5465gfdsg  gf43se46e5g4e eytrtt6e4"
 
 clean: 
 	$(RM) $(BIN_PATH)/* 
 
 memory: default
-	valgrind $(BINARY) " " "this is a axample of ..qssd.d 2qsd qdhkj sdklj sslqj-*/qsdqkhqskj data"
+	valgrind $(BINARY) " " "lkrgkklkj65d6  df2s454s14 opg132dfg 8ee5rg4ev  6r5465gfdsg  gf43se46e5g4e eytrtt6e4"
