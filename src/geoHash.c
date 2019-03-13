@@ -1,37 +1,19 @@
-
-#include<stdio.h>
-#include<stdlib.h>
-#include<string.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <assert.h>
 
-#define NB_BITS (5*NB_characters)
-#define LAT_MAX_VAL 180.0
-#define LNG_MAX_VAL 90.0
-
-typedef struct
-{
-    double left;
-    double right;
-    double up;
-    double down;
-    int bit;
-} Zone;
-
+#include "geoHash.h"
 
 static const char BASE32_TABLE[33] = "0123456789bcdefghjkmnpqrstuvwxyz";
 
+
+///////////////////////////////////////////////////////////////////////////
 char toBase32(int dec){
     return BASE32_TABLE[dec];
 }
 
-void usage(){
-    printf( "./executable <latitude> <longitude> <precision>\n"
-            "\t-->precision is the number of letters in the geoHash\n"
-            "\t-->latitude is a double in the range {-180,180}\n"
-            "\t-->longitude is a double in the range {-90,90}\n");
-}
-
-
+///////////////////////////////////////////////////////////////////////////
 void splitLat(Zone* pZone, double latitude){
 
     double Mlat = ((pZone->left) + (pZone->right))/2;
@@ -45,6 +27,7 @@ void splitLat(Zone* pZone, double latitude){
     }
 }
 
+///////////////////////////////////////////////////////////////////////////
 void splitLong(Zone* pZone, double longitude){
     double Mlong = ( (pZone->up) + (pZone->down) )/2;
     if( longitude <= Mlong){
@@ -57,8 +40,14 @@ void splitLong(Zone* pZone, double longitude){
     }
 }
 
+///////////////////////////////////////////////////////////////////////////
+void geoHash(double latitude, double longitude, int NB_characters, char* geoHash){
 
-void geoHash(double latitude, double longitude, int NB_characters){
+    //INPUT VALIDATION
+    assert( (latitude>=(-LAT_MAX_VAL))  && (latitude <= (LAT_MAX_VAL)) );
+    assert( (longitude>=(-LNG_MAX_VAL)) && (longitude <= (LNG_MAX_VAL)) );
+    assert( NB_characters>=1 );
+
     Zone z;
     
     //init
@@ -93,34 +82,10 @@ void geoHash(double latitude, double longitude, int NB_characters){
     for(int k=0 ;k<NB_BITS/5;k++){
         sequence[k] = toBase32(sequence[k]);
     }
+
+    strcpy(geoHash,sequence);
     #ifdef __DEBUG
         printf("\n");
         printf("%s\n",sequence);
     #endif
-}
-
-int main(int argc , char* argv[]){
-    
-    if(argc==4){
-        double latitude     =atof(argv[1]);
-        double longitude    =atof(argv[2]);
-        int precision       =atoi(argv[3]);
-
-        //INPUT VALIDATION
-        assert( (latitude>=(-LAT_MAX_VAL))  && (latitude <= (LAT_MAX_VAL)) );
-        assert( (longitude>=(-LNG_MAX_VAL)) && (longitude <= (LNG_MAX_VAL)) );
-        assert( precision>=1 );
-
-
-        geoHash(
-            latitude,
-            longitude,
-            precision
-        );
-    }else
-    {
-        usage();
-    }
-    
-    return 0;
 }

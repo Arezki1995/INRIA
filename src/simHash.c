@@ -4,19 +4,7 @@
 
 //For MD5 hashing
 #include <openssl/md5.h>
-
-#define MAX             64          //maximum characters in the word
-#define CHAR_SIZE       8           //this is fixed not to be changed
-
-struct node{
-   char data[MAX];
-   struct node* next;
-   unsigned char hash[MD5_DIGEST_LENGTH];
-   int columnVal[MD5_DIGEST_LENGTH][CHAR_SIZE];
-};
-
-typedef struct node Node;
-typedef struct node* NodePointer;
+#include "simHash.h"
 
 ////////////////////////////////////////////////////////////////////////////
 void calcuteSimHash(NodePointer current, char* simHash){
@@ -164,13 +152,6 @@ char* simHash(const char* delim, char* inputStr, char* simHash){
    return simHash;
 }
 
-////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////
-int main(int argc, char* argv[]){
-   char hash[CHAR_SIZE*MD5_DIGEST_LENGTH+1];
-   printf("%s\n",simHash(argv[1],argv[2],hash));
-   return 0;
-}
 
 
 
