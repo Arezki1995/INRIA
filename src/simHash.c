@@ -6,7 +6,7 @@
 #include <openssl/md5.h>
 
 #define MAX 64                      //maximum characters in the word
-#define DIGEST_LENGTH   16           //number of bytes for the digest
+#define DIGEST_LENGTH   16          //number of bytes for the digest up to 16 Bytes = 128 bits according to OPENSSL MD5 LIBRARY
 #define CHAR_SIZE       8           //this is fixed not to be changed
 
 struct node{
@@ -20,6 +20,46 @@ typedef struct node Node;
 typedef struct node* NodePointer;
 
 ////////////////////////////////////////////////////////////////////////////
+void sumColumnVals(NodePointer current){
+   if(NULL == current) return;
+   
+   int columnValSum[DIGEST_LENGTH][CHAR_SIZE];
+
+   //init sum array to zeros
+   for(size_t i = 0; i < DIGEST_LENGTH; i++)
+   {
+      for(size_t j = 0; j < CHAR_SIZE; j++)
+      {
+         columnValSum[i][j] =0 ;
+      }
+   }
+   
+   //loop through list
+   while(NULL != current){
+      for(size_t i = 0; i < DIGEST_LENGTH; i++)
+      {
+         for(size_t j = 0; j < CHAR_SIZE; j++)
+         {
+            columnValSum[i][j] += (current->columnVal[i][j]) ;
+         }
+      }
+      current = current->next;
+   }
+
+
+   printf("TOTAL COLUMN SUMS:\n");
+   for(size_t i = 0; i < DIGEST_LENGTH; i++)
+      {
+         for(size_t j = 0; j < CHAR_SIZE; j++)
+         {
+            printf("[%4d]", columnValSum[i][j] ) ;
+
+         }
+         printf("\n");
+      }
+
+}
+////////////////////////////////////////////////////////////////////////////
 void displayColumnVal(NodePointer n){
    for(size_t i = 0; i < DIGEST_LENGTH; i++)
    {
@@ -27,11 +67,8 @@ void displayColumnVal(NodePointer n){
       {
          printf("[%2d]", (n->columnVal[i][j]) );
       }
-      printf("\n");
-      
+      printf("\n");  
    }
-   
-
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -85,7 +122,6 @@ void displayLinkedList(NodePointer current){
       printf("LIST EMPTY!\n\n");
       return;
    }
-   printf("TOKENS LIST:\n");
 
    //loop through list
    while(NULL != current){
@@ -117,7 +153,13 @@ int main(int argc, char* argv[]){
     while ((token = strtok_r(myString, delim, &myString))) {
         insertIntoLinkedList(token, &head);
     }
+
+   
     displayLinkedList(head);
+
+    //SUMMING COLUMN VALUES
+    sumColumnVals(head);
+
     freeLinkedList(head);
     
     return 0;
