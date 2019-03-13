@@ -10,14 +10,26 @@ BINARY = $(BIN_PATH)/$(TARGET)
 DEPENDENCIES = $(SOURCE_PATH)/simHash.c
 
 
-default : $(DEPENDENCIES)
+default: $(DEPENDENCIES)
 	$(CC) -o $(BINARY) $(DEPENDENCIES) $(CFLAGS) -lcrypto
 
-test : default
-	./$(BINARY)  " " "lkrgkklkj65d6  df2s454s14 opg132dfg 8ee5rg4ev  6r5465gfdsg  gf43se46e5g4e eytrtt6e4"
+debug: $(DEPENDENCIES)
+	$(CC) -o $(BINARY) $(DEPENDENCIES) $(CFLAGS) -lcrypto -D__DEBUG -g
+
+test1: default
+	./$(BINARY)  " " "There is no one who loves pain itself, who seeks after it and wants to have it, simply because it is pain..."
+
+test2: default
+	./$(BINARY)  " " "There is no one who loves pain itself, who seeks after it and wants to have it, simply because it is Pain..."
+
+test3: default
+	./$(BINARY)  " " "THeRe iS nO oNe wHo LovEs pAin iTseLf, wHo seEks afTer iT aNd wAnts To haVe it, SiMply beCaUse iT Is pAiN..."
+
+test4: default
+	./$(BINARY)  " " "Feel like you can't read as well as you could when you were 14 years old? You're not alone"
 
 clean: 
 	$(RM) $(BIN_PATH)/* 
 
 memory: default
-	valgrind $(BINARY) " " "lkrgkklkj65d6  df2s454s14 opg132dfg 8ee5rg4ev  6r5465gfdsg  gf43se46e5g4e eytrtt6e4"
+	valgrind $(BINARY) " " "There is no one who loves pain itself, who seeks after it and wants to have it, simply because it is pain..."

@@ -5,28 +5,27 @@
 //For MD5 hashing
 #include <openssl/md5.h>
 
-#define MAX 64                      //maximum characters in the word
-#define DIGEST_LENGTH   16          //number of bytes for the digest up to 16 Bytes = 128 bits according to OPENSSL MD5 LIBRARY
+#define MAX             64          //maximum characters in the word
 #define CHAR_SIZE       8           //this is fixed not to be changed
 
 struct node{
    char data[MAX];
    struct node* next;
-   unsigned char hash[DIGEST_LENGTH];
-   int columnVal[DIGEST_LENGTH][CHAR_SIZE];
+   unsigned char hash[MD5_DIGEST_LENGTH];
+   int columnVal[MD5_DIGEST_LENGTH][CHAR_SIZE];
 };
 
 typedef struct node Node;
 typedef struct node* NodePointer;
 
 ////////////////////////////////////////////////////////////////////////////
-void sumColumnVals(NodePointer current){
+void calcuteSimHash(NodePointer current, char* simHash){
    if(NULL == current) return;
    
-   int columnValSum[DIGEST_LENGTH][CHAR_SIZE];
+   int columnValSum[MD5_DIGEST_LENGTH][CHAR_SIZE];
 
    //init sum array to zeros
-   for(size_t i = 0; i < DIGEST_LENGTH; i++)
+   for(size_t i = 0; i < MD5_DIGEST_LENGTH; i++)
    {
       for(size_t j = 0; j < CHAR_SIZE; j++)
       {
@@ -36,7 +35,7 @@ void sumColumnVals(NodePointer current){
    
    //loop through list
    while(NULL != current){
-      for(size_t i = 0; i < DIGEST_LENGTH; i++)
+      for(size_t i = 0; i < MD5_DIGEST_LENGTH; i++)
       {
          for(size_t j = 0; j < CHAR_SIZE; j++)
          {
@@ -46,22 +45,22 @@ void sumColumnVals(NodePointer current){
       current = current->next;
    }
 
+   simHash[CHAR_SIZE*MD5_DIGEST_LENGTH]='\0';
 
-   printf("TOTAL COLUMN SUMS:\n");
-   for(size_t i = 0; i < DIGEST_LENGTH; i++)
+   for(size_t i = 0; i < MD5_DIGEST_LENGTH; i++)
+   {
+      for(size_t j = 0; j < CHAR_SIZE; j++)
       {
-         for(size_t j = 0; j < CHAR_SIZE; j++)
-         {
-            printf("[%4d]", columnValSum[i][j] ) ;
-
-         }
-         printf("\n");
+         sprintf( simHash+ 8*i +j,"%d", ((columnValSum[i][j]) > 0) ? 1:0 );
       }
+
+   }
 
 }
 ////////////////////////////////////////////////////////////////////////////
+#ifdef __DEBUG
 void displayColumnVal(NodePointer n){
-   for(size_t i = 0; i < DIGEST_LENGTH; i++)
+   for(size_t i = 0; i < MD5_DIGEST_LENGTH; i++)
    {
       for(size_t j = 0; j < CHAR_SIZE; j++)
       {
@@ -70,11 +69,12 @@ void displayColumnVal(NodePointer n){
       printf("\n");  
    }
 }
-
+#endif
 ////////////////////////////////////////////////////////////////////////////
 void setColumnVal(NodePointer np){
     
-    for(size_t i=0; i< DIGEST_LENGTH ;i++){
+    for(size_t i=0; i< MD5_DIGEST_LENGTH ;i++)
+    {
        //setting column values a digest byte at a time
         np->columnVal[i][0]= ( ((np->hash[i] >>7) & (1))  == 1) ? 1:-1;
         np->columnVal[i][1]= ( ((np->hash[i] >>6) & (1))  == 1) ? 1:-1;
@@ -106,9 +106,9 @@ void insertIntoLinkedList(char * token, NodePointer* listHead){
 
       strcpy(newNode->data, token);
       
-      //calculating 16bits MD5 hash of token  
-      const unsigned char* mot = (const unsigned char*) token;
-      MD5(mot, sizeof(newNode->data), newNode->hash);
+      //calculating MD5 hash of token  
+      MD5((const unsigned char *)token, strlen(newNode->data), newNode->hash);
+      
       setColumnVal(newNode);
       //insert at beginning of linked list
          newNode->next = current;
@@ -117,6 +117,7 @@ void insertIntoLinkedList(char * token, NodePointer* listHead){
 }
 
 ////////////////////////////////////////////////////////////////////////////
+#ifdef __DEBUG
 void displayLinkedList(NodePointer current){
    if(NULL == current){
       printf("LIST EMPTY!\n\n");
@@ -126,41 +127,50 @@ void displayLinkedList(NodePointer current){
    //loop through list
    while(NULL != current){
 
-      printf("\n\n%s \t:\t", current->data);
-      for(size_t i = 0; i < DIGEST_LENGTH; i++)
+      printf("\n\n[%s]\t:\t", current->data);
+      for(size_t i = 0; i < MD5_DIGEST_LENGTH; i++)
       {
-          printf("%03d ", current->hash[i]);
+          printf("%02x ", current->hash[i]);
       }
       printf("\n");
       printf("COLUMN VALUES:\n");
-      displayColumnVal(current);
+      
+         displayColumnVal(current);
       
       current = current->next;
    }
    printf("\n\n");
 }
-
+#endif
 
 ////////////////////////////////////////////////////////////////////////////
-int main(int argc, char* argv[]){
+char* simHash(const char* delim, char* inputStr, char* simHash){
     
-    const char* delim =argv[1];
-    char* token; 
-    char* myString = argv[2]; 
+   char* token; 
+   NodePointer head = NULL;
 
-    NodePointer head = NULL;
-
-    while ((token = strtok_r(myString, delim, &myString))) {
+   while ((token = strtok_r(inputStr, delim, &inputStr))) {
         insertIntoLinkedList(token, &head);
-    }
+   }
 
+   #ifdef __DEBUG
+      displayLinkedList(head);
+   #endif
+   //calculating simHash
    
-    displayLinkedList(head);
-
-    //SUMMING COLUMN VALUES
-    sumColumnVals(head);
-
-    freeLinkedList(head);
+   calcuteSimHash(head, simHash);
+   freeLinkedList(head);
     
-    return 0;
+   return simHash;
 }
+
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+int main(int argc, char* argv[]){
+   char hash[CHAR_SIZE*MD5_DIGEST_LENGTH+1];
+   printf("%s\n",simHash(argv[1],argv[2],hash));
+   return 0;
+}
+
+
+
