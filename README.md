@@ -26,7 +26,7 @@ At this level I did not find a way to test more exhaustively test this.
 ##Running unit tests
 To reproduce the unit tests performed move to top level makefile location and run:
     ``   make geoUnitTest``
-    ``  make simUnitTest``
+    ``   make simUnitTest``
 
 
 ##Library
