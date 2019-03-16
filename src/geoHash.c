@@ -41,12 +41,12 @@ void splitLong(Zone* pZone, double longitude){
 }
 
 ///////////////////////////////////////////////////////////////////////////
-void geoHash(double latitude, double longitude, int NB_characters, char* geoHash){
+char* geoHash(double latitude, double longitude, int NB_characters, char* geoHash){
 
     //INPUT VALIDATION
-    assert( (latitude>=(-LAT_MAX_VAL))  && (latitude <= (LAT_MAX_VAL)) );
-    assert( (longitude>=(-LNG_MAX_VAL)) && (longitude <= (LNG_MAX_VAL)) );
-    assert( NB_characters>=1 );
+    if( !((latitude>=(-LAT_MAX_VAL))  && (latitude <= (LAT_MAX_VAL))) ) return NULL;
+    if( !((longitude>=(-LNG_MAX_VAL)) && (longitude <= (LNG_MAX_VAL))) ) return NULL;
+    if( !(NB_characters>=1) ) return NULL;
 
     Zone z;
     
@@ -88,4 +88,5 @@ void geoHash(double latitude, double longitude, int NB_characters, char* geoHash
         printf("\n");
         printf("%s\n",sequence);
     #endif
+    return geoHash;
 }

@@ -14,7 +14,6 @@ typedef struct
     int bit;
 } Zone;
 
-
-void geoHash(double latitude, double longitude, int NB_characters, char* geoHash);
+char* geoHash(double latitude, double longitude, int NB_characters, char* geoHash);
 
 #endif

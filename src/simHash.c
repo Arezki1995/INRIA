@@ -133,7 +133,9 @@ void displayLinkedList(NodePointer current){
 
 ////////////////////////////////////////////////////////////////////////////
 char* simHash(const char* delim, char* inputStr, char* simHash){
-    
+
+   if ((inputStr==NULL) || (strlen(inputStr)==0) || delim==NULL || strlen(delim)==0 )       return NULL;
+   
    char* token; 
    NodePointer head = NULL;
 
@@ -151,7 +153,3 @@ char* simHash(const char* delim, char* inputStr, char* simHash){
     
    return simHash;
 }
-
-
-
-

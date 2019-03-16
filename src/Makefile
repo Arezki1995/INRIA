@@ -1,6 +1,6 @@
 #VARIABLES
 CC 			= gcc
-CFLAGS 		= -Wall -Werror
+CFLAGS 		= -Wall -Werror -g
 
 LIBS_PATH	= ../lib
 CRYPTO		= -lcrypto
@@ -20,5 +20,6 @@ simHash.o: simHash.c simHash.h
 
 $(LIBRARY): geoHash.o simHash.o
 	ar rcs $@ $^
-	$(RM) -f core *.o *.gch
+	$(RM) core *.o *.gch
+	
 

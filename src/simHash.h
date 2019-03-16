@@ -2,8 +2,9 @@
 #define __SIMHASH_H
 
 #include <openssl/md5.h>
-#define MAX             64          //maximum characters in the word
-#define CHAR_SIZE       8           //this is fixed not to be changed
+#define MAX             64                          //maximum characters in the word
+#define CHAR_SIZE       8                           //this is fixed not to be changed
+#define SIMHASH_LENGTH  CHAR_SIZE*MD5_DIGEST_LENGTH+1
 
 struct node{                                        //linked list node data structure
     char data[MAX];                                 //token data
