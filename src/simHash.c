@@ -10,6 +10,7 @@
 void calcuteSimHash(NodePointer current, char* simHash){
    if(NULL == current) return;
    
+   //matrix used to store the individual bits (08) of every character in the md5 digest
    int columnValSum[MD5_DIGEST_LENGTH][CHAR_SIZE];
 
    //init sum array to zeros
@@ -23,6 +24,8 @@ void calcuteSimHash(NodePointer current, char* simHash){
    
    //loop through list
    while(NULL != current){
+
+      //calculating column sums vector by adding all the column values in at given column index
       for(size_t i = 0; i < MD5_DIGEST_LENGTH; i++)
       {
          for(size_t j = 0; j < CHAR_SIZE; j++)
@@ -35,6 +38,7 @@ void calcuteSimHash(NodePointer current, char* simHash){
 
    simHash[CHAR_SIZE*MD5_DIGEST_LENGTH]='\0';
 
+   //constructing the simhash as binary string
    for(size_t i = 0; i < MD5_DIGEST_LENGTH; i++)
    {
       for(size_t j = 0; j < CHAR_SIZE; j++)
@@ -63,7 +67,7 @@ void setColumnVal(NodePointer np){
     
     for(size_t i=0; i< MD5_DIGEST_LENGTH ;i++)
     {
-       //setting column values a digest byte at a time
+       //setting column values a digest byte at a time if bit is SET column value is 1 and -1 otherwise
         np->columnVal[i][0]= ( ((np->hash[i] >>7) & (1))  == 1) ? 1:-1;
         np->columnVal[i][1]= ( ((np->hash[i] >>6) & (1))  == 1) ? 1:-1;
         np->columnVal[i][2]= ( ((np->hash[i] >>5) & (1))  == 1) ? 1:-1;
@@ -139,6 +143,7 @@ char* simHash(const char* delim, char* inputStr, char* simHash){
    char* token; 
    NodePointer head = NULL;
 
+   //tokenizing the input according to a delimeter and storing it in a linked list
    while ((token = strtok_r(inputStr, delim, &inputStr))) {
         insertIntoLinkedList(token, &head);
    }

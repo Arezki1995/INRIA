@@ -5,6 +5,7 @@
 #define LAT_MAX_VAL 180.0
 #define LNG_MAX_VAL 90.0
 
+//a structure used to hold information about the zone under subdivision
 typedef struct
 {
     double left;

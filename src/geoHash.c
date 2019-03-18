@@ -9,13 +9,15 @@ static const char BASE32_TABLE[33] = "0123456789bcdefghjkmnpqrstuvwxyz";
 
 
 ///////////////////////////////////////////////////////////////////////////
+//conversion to base 32
 char toBase32(int dec){
     return BASE32_TABLE[dec];
 }
 
 ///////////////////////////////////////////////////////////////////////////
+//split zone according to latitude (dichotomy)
 void splitLat(Zone* pZone, double latitude){
-
+    //find the middle of the zone and keep the side where the location is
     double Mlat = ((pZone->left) + (pZone->right))/2;
     if( latitude <= Mlat){
         pZone->right = Mlat;
@@ -28,7 +30,9 @@ void splitLat(Zone* pZone, double latitude){
 }
 
 ///////////////////////////////////////////////////////////////////////////
+//split zone according to longitude (dichotomy)
 void splitLong(Zone* pZone, double longitude){
+    //find the middle of the zone and keep the side where the location is
     double Mlong = ( (pZone->up) + (pZone->down) )/2;
     if( longitude <= Mlong){
         pZone->up = Mlong;
@@ -56,29 +60,33 @@ char* geoHash(double latitude, double longitude, int NB_characters, char* geoHas
     #ifdef __DEBUG
         printf("ENCODING : lat: %f  long: %f  \n", latitude,longitude);
     #endif
+
     char* sequence = (char*)malloc((NB_characters + 1) * sizeof(char));
     sequence[NB_characters] = '\0';
 
 
     int index = 0;
 
+    //constructing geohash each character = 000+5bits according to sudivision
     for(int i=0; i<NB_BITS; i++){
-
+        //split zone by longitude then latitude alternatively
         if(i%2==0)  splitLat(&z,longitude);
         else        splitLong(&z,latitude);
 
+        //start a new word after five bits (splits)
         if(i%5==0 && i!=0)   index++;
         
         #ifdef __DEBUG
             printf("%d",z.bit);
         #endif
         
+        //the bit corresponding to the current iteration
         if(z.bit==1)    sequence[index] |=   ( 1 << (4-i%5) );
         else            sequence[index] &=  ~( 1 << (4-i%5) );
 
     }
 
-    
+    //convert sequence into base32 sequence
     for(int k=0 ;k<NB_BITS/5;k++){
         sequence[k] = toBase32(sequence[k]);
     }
